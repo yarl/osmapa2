@@ -1,0 +1,58 @@
+﻿.b-m-mpanel {
+    background-color: rgba(255,255,255,.8);
+    padding: 2px 0;
+    position: absolute;
+    z-index: 99997;
+    left:0px;
+    top:0px;
+    border-radius: 4px;
+    -webkit-box-shadow: 2px 2px 5px 0px #aaa;
+    -moz-box-shadow: 2px 2px 5px 0px #aaa;
+    -ms-box-shadow: 2px 2px 5px 0px #aaa;
+    -o-box-shadow: 2px 2px 5px 0px #aaa;
+    box-shadow: 2px 2px 5px 0px #aaa;
+}
+.b-m-split {
+    height: 6px;
+    background: url(splitLine.gif) center repeat-x;
+    font-size: 0px;
+    margin: 0 2px;
+}
+.b-m-item, .b-m-idisable
+{
+    padding: 4px 2px;
+    margin: 0 2px 0 3px;
+    cursor: normal;
+    line-height:100%;
+}
+
+.b-m-idisable
+{
+    color:#808080;
+}
+.b-m-ibody, .b-m-arrow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+	
+}
+.b-m-arrow {
+    background: url(m_arrow.gif) right  no-repeat;	
+}
+.b-m-idisable .b-m-arrow
+{
+    background:none;
+}
+.b-m-item img, .b-m-ifocus img, .b-m-idisable img {
+	margin-right: 8px;
+}
+.b-m-ifocus {
+    background-color: rgba(220,220,220,.8);
+    padding: 4px 2px;
+    margin: 0 2px 0 3px;
+    cursor: hand;
+    cursor: pointer;
+    line-height:100%;
+}
+.b-m-idisable img {
+    visibility:hidden;
+}
