@@ -33,7 +33,7 @@ $("#box-search h3").click(function () {
 //change tabs in search box
 $("#box-search-switcher > button").click(function () {
     var clicked = $(this).attr('name');
-    if(clicked=="clear") {
+    if(clicked === "clear") {
         layers.search.clearLayers();
         $("#box-search-results-container").fadeOut(150);
         $("#box-search > div").delay(300).css("bottom","auto");
@@ -59,7 +59,7 @@ $("#box-search-button").click(function () {
     search.start();
 });
 $("#box-search-input").keypress(function(e) {
-    if(e.which == 13)
+    if(e.which === 13)
         search.start();
 });
 
@@ -82,14 +82,18 @@ search.point = function(id) {
         
         this.marker = L.marker([this.coord.lat, this.coord.lng], {icon: search.icon}).bindPopup(txt).openPopup();
         return this.marker;
-    }
+    };
     
     this.getInfo = function() {
         var txt = "";
-        if(this.type === search.type.POI)
+        if(this.type === search.type.POI) {
+            //nominatim fixes
+            if(this.name === 'undefined') this.name = this.value;
+            if(this.road === '') this.road = this.pedestrian;
+            
             txt += "<p class=\"search-results-poi\" id=\""+this.id+"\"><strong>"+this.name+"</strong><br />"+
                 this.road+" "+this.number+"<br />"+this.city+"</p>";
-        else {
+        } else {
             if(this.tag === 'boundary')   
                 txt += "<p class=\"search-results-town\" id=\""+this.id+"\"><strong>"+this.name+"</strong><br />"+
                     this.state+", "+this.country+"</p>";
@@ -102,7 +106,7 @@ search.point = function(id) {
                     this.state+", "+this.country+"</p>";   
         }
         return txt;
-    }
+    };
 };
 
 /*
@@ -133,7 +137,7 @@ search.start = function() {
             search.parse(output);
         }
     });
-}
+};
 
 search.parse = function(output) {
     $("#box-search .loading").fadeOut(150);
@@ -153,29 +157,39 @@ search.parse = function(output) {
             point.name = $(this).find($(this).attr("type")).text();                 // name
             point.number = $(this).find("house_number").text();                     // number for house/poi
             point.road = $(this).find("road").text();
+            point.pedestrian = $(this).find("pedestrian").text();   //wtf? why they made this
+            
             point.district = $(this).find("city_district").text();
             point.city = $(this).find("city").text();
             point.county = $(this).find("county").text();
             point.state = $(this).find("state").text();
             point.country = $(this).find("country").text();
             
-            if(point.name === undefined)
-                point.name = $(this).find($(this).attr("place")).each(function(){
-                    alert($(this).text());
-                });
+//            if(point.name === undefined)
+//                point.name = $(this).find($(this).attr("place")).each(function(){
+//                    alert($(this).text());
+//                });
 
         //type
-        if(point.tag == "place")
+        if(point.tag === "place") {
             point.type = search.type.ADDR;
-        if(point.tag == "boundary" && point.value == "administrative")
-            point.type = search.type.ADDR;
+            search.results[$(this).attr("osm_id")] = point;
+        } 
+        /*if(point.tag === "boundary" && point.value === "administrative")
+            point.type = search.type.ADDR;*/
         
-        if(point.tag == "amenity")
+        if(point.tag === "amenity" || point.tag === "shop") {
             point.type = search.type.POI;
+            search.results[$(this).attr("osm_id")] = point;
+        }
+        if(point.tag === "railway") {
+            point.type = search.type.POI;
+            search.results[$(this).attr("osm_id")] = point;
+        } 
 //        if($(this).attr("class")=="highway")
 //            point.type = search.type.ADDR;
 
-        search.results[$(this).attr("osm_id")] = point;
+        
     });
 
     // add to map
@@ -203,9 +217,9 @@ search.parse = function(output) {
     $("#box-search-switcher button[name=addr]").click();
     $("#box-search-results div[name=addr]").html(search.desc['addr']);
     $("#box-search-results div[name=poi]").html(search.desc['poi']);
-}
+};
 
 search.returnBox = function() {
     
-}
+};
 

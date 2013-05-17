@@ -74,13 +74,20 @@ $(document).ready(function() {
     
     // layers
     map.layer = undefined;
-    $("#box-layers button[name=foursq]").click();
+    $("#box-layers button[name=osmapa]").click();
     map.hash = new L.Hash(map);
     
-    map.on('moveend',function() {
-        //if(map.layer == 1)
-        //    api.query();
+//    map.on('moveend',function() {
+//        if(map.layer == 1)
+//            api.query();
+//    });
+
+    map._lastClick = new L.LatLng(0,0);
+    map.on('contextmenu', function(e) {
+        map._lastClick = e.latlng;
+        console.log(e.latlng);
     });
+    
     
     map.fitZoom = function(array) {
         var minLat;
@@ -135,7 +142,7 @@ layers.change = function(id) {
         map.layer = id.substring(6, 8);
         layers.container.clearLayers();
         layers.container.addLayer(eval("layers."+name));
-        if(name == "bing")
+        if(name === "bing")
             layers.container.addLayer(layers.names);
 
     //overlay
@@ -144,7 +151,7 @@ layers.change = function(id) {
         b ? layers.container_.removeLayer(eval("layers."+name)) : layers.container_.addLayer(eval("layers."+name));
         eval("map."+name+" = !b");
     }
-}
+};
 
 /*
 * Edit
