@@ -88,6 +88,9 @@ $(document).ready(function() {
         console.log(e.latlng);
     });
     
+    map.move = function() {
+        map.panTo(map._lastClick);
+    };
     
     map.fitZoom = function(array) {
         var minLat;

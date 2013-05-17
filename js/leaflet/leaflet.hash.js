@@ -18,21 +18,21 @@
         lastHash: null,
     
         parseHash: function(hash) {
-            if(hash.indexOf('#') == 0) {
+            if(hash.indexOf('#') === 0) {
                 hash = hash.substr(1);
             }
             var args = hash.split("&");
             if (args.length >= 3) {
                 for(var i in args) {
-                    if(args[i].search("lat=") != -1) var lat = parseFloat(args[i].substring(4,args[i].length));
-                    if(args[i].search("lon=") != -1) var lon = parseFloat(args[i].substring(4,args[i].length));
-                    if(args[i].search("z=") != -1) var zoom = parseInt(args[i].substring(2,args[i].length));
+                    if(args[i].search("lat=") !== -1) var lat = parseFloat(args[i].substring(4,args[i].length));
+                    if(args[i].search("lon=") !== -1) var lon = parseFloat(args[i].substring(4,args[i].length));
+                    if(args[i].search("z=") !== -1) var zoom = parseInt(args[i].substring(2,args[i].length));
                     
-                    if(args[i].search("m=") != -1) {
+                    if(args[i].search("m=") !== -1) {
                         var id = args[i].substring(2,args[i].length);
                         layers.change("layer-"+id);
                     }
-                    if(args[i].search("b=") != -1) {
+                    if(args[i].search("b=") !== -1) {
                         map.bugid = args[i].substring(2,args[i].length);
                         if(!bbugs)
                             $("#box-bugs h3").click();
@@ -57,7 +57,7 @@
             }
         },
         _change: function(source, param, text) {
-            var r = new RegExp(param+"=[a-z0-9\.]*");
+            var r = new RegExp(param+"=[a-z0-9\.\-]*");
             
             var hash;
             if(text === null) {

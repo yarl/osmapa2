@@ -3,10 +3,10 @@ search.results = new Array();
 search.desc = new Array();
 
 search.icon = L.icon({
-    iconUrl: 'js/leaflet/images/marker-icon-blue.png',
+    iconUrl: 'js/leaflet/images/marker.png',
     shadowUrl: 'js/leaflet/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
+    iconSize: [31, 41],
+    iconAnchor: [15, 41],
     popupAnchor: [0, -41]
 });
 
@@ -76,21 +76,18 @@ search.point = function(id) {
     this.element = "node";
     
     this.getMarker = function() {
-        var txt = this.desc;
-        txt += "<br /><a class='btn btn-mini' href='http://nominatim.openstreetmap.org/details.php?place_id="+this.nominatim+
-            "' />Nominatim</a>";
+        var txt = '<div class="popup-body"><h1>'+this.name+'</h1><div>'+this.desc+'</div><div>'+
+                '<a class="btn btn-mini" href="http://www.openstreetmap.org/browse/'+this.element+'/'+this.id+'" target="_blank" />Zobacz w OSM</a> '+
+                '<a class="btn btn-mini" href="http://nominatim.openstreetmap.org/details.php?place_id='+this.nominatim+'" target="_blank" />Nominatim</a> '+
+                '</div></div>';
         
-        this.marker = L.marker([this.coord.lat, this.coord.lng], {icon: search.icon}).bindPopup(txt).openPopup();
+        this.marker = L.marker(this.coord, {icon: search.icon}).bindPopup(txt).openPopup();
         return this.marker;
     };
     
     this.getInfo = function() {
         var txt = "";
         if(this.type === search.type.POI) {
-            //nominatim fixes
-            if(this.name === 'undefined') this.name = this.value;
-            if(this.road === '') this.road = this.pedestrian;
-            
             txt += "<p class=\"search-results-poi\" id=\""+this.id+"\"><strong>"+this.name+"</strong><br />"+
                 this.road+" "+this.number+"<br />"+this.city+"</p>";
         } else {
@@ -164,6 +161,11 @@ search.parse = function(output) {
             point.county = $(this).find("county").text();
             point.state = $(this).find("state").text();
             point.country = $(this).find("country").text();
+            
+            //nominatim fixes
+            if(point.name === '') point.name = point.value;
+            if(point.name === 'house') point.name = 'numer '+point.number;
+            if(point.road === '') point.road = point.pedestrian;
             
 //            if(point.name === undefined)
 //                point.name = $(this).find($(this).attr("place")).each(function(){

@@ -10,24 +10,34 @@ $(document).ready(function() {
     $("#map").contextmenu({
         width: 150,
         items: [
-            { text: "Start", icon: "sample-css/wi0126-16.gif", alias: "1-1", action: routing.setStartPoint },
-            { text: "Koniec", icon: "sample-css/ac0036-16.gif", alias: "1-2", action: routing.setEndPoint },
-            { type: "splitLine" }
+            { text: "Start", icon: "img/route.png", alias: "1-1", action: routing.setStartPoint },
+            { text: "Koniec", icon: "img/route.png", alias: "1-2", action: routing.setEndPoint },
+            { type: "splitLine" },
+            { text: "Wyśrodkuj tutaj", icon: "img/pin.png", alias: "2-1", action: map.move }
+            /*{ text: "Szablony dla Wikipedii", icon: "img/route.png", alias: "2-2", action:  }*/
         ]
     });
+});
+
+routing.icon = L.icon({
+    iconUrl: 'js/leaflet/images/marker-routing.png',
+    shadowUrl: 'js/leaflet/images/marker-shadow.png',
+    iconSize: [31, 41],
+    iconAnchor: [15, 41],
+    popupAnchor: [0, -41]
 });
 
 routing.setStartPoint = function() {
     if(routing.startPoint !== undefined)
         routing.points.removeLayer(routing.startPoint);
-    routing.startPoint = L.marker(map._lastClick, {draggable:true})
+    routing.startPoint = L.marker(map._lastClick, {draggable:true, icon: routing.icon})
         .on('dragend', function() {
             routing.script("road");
         })
         .on('drag', function() {
             routing.script("road_drag");
         })
-        .bindPopup("<strong>Start</strong>")
+        .bindPopup('<div class="popup-body"><h1>Początek trasy</h1><div>Lorem ipsum</div></div>')
         .addTo(routing.points);
         
     routing.script("road");
@@ -37,14 +47,14 @@ routing.setEndPoint = function() {
     if(routing.endPoint !== undefined)
         routing.points.removeLayer(routing.endPoint);
     
-    routing.endPoint = L.marker(map._lastClick, {draggable:true})
+    routing.endPoint = L.marker(map._lastClick, {draggable:true, icon: routing.icon})
         .on('dragend', function() {
             routing.script("road");
         })
         .on('drag', function() {
             routing.script("road_drag");
         })
-        .bindPopup("<strong>Koniec</strong>")
+        .bindPopup('<div class="popup-body"><h1>Koniec trasy</h1><div>Lorem ipsum</div></div>')
         .addTo(routing.points);
 
     routing.script("road");

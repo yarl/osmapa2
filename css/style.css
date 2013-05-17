@@ -44,15 +44,32 @@
 */
 .navbar {
     position: relative;
-    -webkit-box-shadow: 0 5px 6px -1px #aaa;
-    -moz-box-shadow: 0 5px 6px -1px #aaa;
-    box-shadow: 0 5px 6px -1px #aaa;
+    -webkit-box-shadow: 0 5px 6px -1px #eee;
+    -moz-box-shadow: 0 5px 6px -1px #eee;
+    box-shadow: 0 5px 6px -1px #eee;
     z-index: 3;
 }
 
 .loading {
     display: none;
 }
+
+.logo a {
+    padding: 0 0 0 30px !important;
+    margin: 0 !important;
+    display: inline !important;
+}
+
+.logo em {
+    margin-left: 10px;
+}
+
+@media (max-width: 600px) {
+    .logo em {
+        display: none
+    } 
+}
+
 /*
   Boxes
 ********************************************************************************
@@ -183,6 +200,9 @@
 }
 .search-results-town {
     background: url(../img/city.png) no-repeat 0px 0px; 
+}
+.search-results-poi {
+    background: url(../img/poi.png) no-repeat 0px 0px; 
 }
 
 #box-search-results div p:hover {
@@ -447,7 +467,11 @@ hr {
 }
 
 /* osb */
-.osb-popup h1 {
+.popup-body {
+    min-width: 150px;
+}
+
+.osb-popup h1, .popup-body h1 {
     background: rgba(0,0,0,.8);
     color: #ddd;
     font-size: 14px;
@@ -455,6 +479,10 @@ hr {
     line-height: 30px;
     padding-left: 5px;
     border-radius: 4px 4px 0 0;
+}
+
+.popup-body > div {
+    padding: 5px;
 }
 
 .osb-popup form {
