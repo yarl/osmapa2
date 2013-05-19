@@ -2,5 +2,5 @@
 
 
 ![a](https://raw.github.com/yarl/osmapa2/master/img/logo-big.png)
-http://osmapa.pl
+http://osmapa.pl/2
 
