@@ -76,11 +76,12 @@ search.point = function(id) {
     this.element = "node";
     
     this.getMarker = function() {
+        
         var txt = '<div class="popup-body"><h1>'+this.name+'</h1><div>'+this.desc+'</div><div>'+
                 '<a class="btn btn-mini" href="http://www.openstreetmap.org/browse/'+this.element+'/'+this.id+'" target="_blank" />Zobacz w OSM</a> '+
                 '<a class="btn btn-mini" href="http://nominatim.openstreetmap.org/details.php?place_id='+this.nominatim+'" target="_blank" />Nominatim</a> '+
                 '</div></div>';
-        
+
         this.marker = L.marker(this.coord, {icon: search.icon}).bindPopup(txt).openPopup();
         return this.marker;
     };
@@ -88,19 +89,16 @@ search.point = function(id) {
     this.getInfo = function() {
         var txt = "";
         if(this.type === search.type.POI) {
-            txt += "<p class=\"search-results-poi\" id=\""+this.id+"\"><strong>"+this.name+"</strong><br />"+
-                this.road+" "+this.number+"<br />"+this.city+"</p>";
+            /*txt += "<p class=\"search-results-poi\" id=\""+this.id+"\"><strong>"+this.name+"</strong><br />"+
+                this.road+" "+this.number+"<br />"+this.city+"</p>";*/
+            txt += '<p class="search-results-poi" id="'+this.id+'">'+this.desc+'</p>';
         } else {
             if(this.tag === 'boundary')   
-                txt += "<p class=\"search-results-town\" id=\""+this.id+"\"><strong>"+this.name+"</strong><br />"+
-                    this.state+", "+this.country+"</p>";
+                txt += '<p class="search-results-town" id="'+this.id+'">'+this.desc+'</p>';
             else if(this.tag === 'place' && this.value === 'house')  
-                txt += "<p class=\"search-results-address\" id=\""+this.id+"\"><strong>numer "+this.number+"</strong><br />"+
-                    this.city+"<br />"+
-                    this.state+", "+this.country+"</p>";
+                txt += '<p class="search-results-address" id="'+this.id+'">'+this.desc+'</p>';
             else
-                txt += "<p class=\"search-results-town\" id=\""+this.id+"\"><strong>"+this.name+"</strong><br />"+
-                    this.state+", "+this.country+"</p>";   
+                txt += '<p class="search-results-town" id="'+this.id+'">'+this.desc+'</p>'; 
         }
         return txt;
     };
@@ -126,7 +124,7 @@ search.start = function() {
         dataType : 'text',
         crossDomain: true,
         url: "http://nominatim.openstreetmap.org/search",
-        data: "q="+$("#box-search-input").val()+"&format=xml&addressdetails=1&polygon=0",
+        data: "q="+$("#box-search-input").val()+"&format=xml&addressdetails=1&polygon=1",
         error:function(xhr, status, errorThrown) {
             alert("Błąd: " + errorThrown);
 	},
@@ -162,9 +160,12 @@ search.parse = function(output) {
             point.state = $(this).find("state").text();
             point.country = $(this).find("country").text();
             
+            point.polygon = $(this).attr("polygonpoints");
+            
             //nominatim fixes
             if(point.name === '') point.name = point.value;
             if(point.name === 'house') point.name = 'numer '+point.number;
+            
             if(point.road === '') point.road = point.pedestrian;
             
 //            if(point.name === undefined)
@@ -177,9 +178,10 @@ search.parse = function(output) {
             point.type = search.type.ADDR;
             search.results[$(this).attr("osm_id")] = point;
         } 
-        /*if(point.tag === "boundary" && point.value === "administrative")
-            point.type = search.type.ADDR;*/
-        
+        if(point.tag === "boundary" && point.value === "administrative") {
+            point.type = search.type.ADDR;
+            search.results[$(this).attr("osm_id")] = point;
+        }
         if(point.tag === "amenity" || point.tag === "shop") {
             point.type = search.type.POI;
             search.results[$(this).attr("osm_id")] = point;

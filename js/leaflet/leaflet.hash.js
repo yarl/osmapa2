@@ -18,20 +18,23 @@
         lastHash: null,
     
         parseHash: function(hash) {
-            if(hash.indexOf('#') === 0) {
-                hash = hash.substr(1);
-            }
+            //hash = hash.replace(/\?/g, "#");
+            if(hash.indexOf('#') === 0) hash = hash.substr(1);  
+            if(hash.indexOf('?') === 0) hash = hash.substr(1);
+            
             var args = hash.split("&");
             if (args.length >= 3) {
                 for(var i in args) {
-                    if(args[i].search("lat=") !== -1) var lat = parseFloat(args[i].substring(4,args[i].length));
-                    if(args[i].search("lon=") !== -1) var lon = parseFloat(args[i].substring(4,args[i].length));
-                    if(args[i].search("z=") !== -1) var zoom = parseInt(args[i].substring(2,args[i].length));
+                    if(args[i].search("lat=") !== -1)   var lat = parseFloat(args[i].substring(4,args[i].length));
+                    if(args[i].search("lon=") !== -1)   var lon = parseFloat(args[i].substring(4,args[i].length));
+                    if(args[i].search("z=") !== -1)     var zoom = parseInt(args[i].substring(2,args[i].length));
+                    if(args[i].search("zoom=") !== -1)  var zoom = parseInt(args[i].substring(5,args[i].length));
                     
-                    if(args[i].search("m=") !== -1) {
+                    if(args[i].search("m=") !== -1 && args[i].search("zoom=") === -1) {
                         var id = args[i].substring(2,args[i].length);
-                        layers.change("layer-"+id);
+                        layers.change("layer-"+id); 
                     }
+                    
                     if(args[i].search("b=") !== -1) {
                         map.bugid = args[i].substring(2,args[i].length);
                         if(!bbugs)
@@ -63,7 +66,7 @@
             if(text === null) {
                 hash = source.replace('&'+param,param).replace(r,'');
             } else
-                hash = (source.search(param+"=") != -1) ? 
+                hash = (source.search(param+"=") !== -1) ? 
                     source.replace(r, param+"=" + text) : 
                     source.concat("&"+param+"=" + text);
             //console.log(param + ": "+hash);
@@ -80,6 +83,10 @@
                 ret = this._change(ret, "lon", center.lng.toFixed(precision));
                 ret = this._change(ret, "z", zoom);
                 ret = this._change(ret, "m", map.layer);
+                
+                ret = this._change(ret, "zoom", null);
+                ret = this._change(ret, "map", null);
+                ret = this._change(ret, "o", null);
                 return ret;
                 
 //                var r_lat = new RegExp("lat=[0-9\.]*");
@@ -92,22 +99,20 @@
 //                                    .replace(r_m, "m=" + map.layer);
             } 
             else {
-                console.log("init");
-                var str = "#lat=" + center.lat.toFixed(precision) + "&lon=" + center.lng.toFixed(precision) + "&z=" + zoom + "&m=" + map.layer;
+                var str = "http://" + location.host + location.pathname + "#lat=" + center.lat.toFixed(precision) + "&lon=" + center.lng.toFixed(precision) + "&z=" + zoom + "&m=" + map.layer;
                 this.lastHash = str;
                 location.replace(str);
                 return str;
             }
         },
         changeHash: function(param, text) {
-            if(this.lastHash == undefined)
+            if(this.lastHash === undefined)
                 this.onMapMove(map);
 
             var hash = this.lastHash;
-            console.log(text);
             hash = this._change(hash, param, text);
             
-            if (this.lastHash != hash) {
+            if (this.lastHash !== hash) {
                 location.replace(hash);
                 this.lastHash = hash;
             }
@@ -148,7 +153,7 @@
                 this.lastHash = location.hash;
             
             var hash = this.formatHash(this.map);
-            if (this.lastHash != hash) {
+            if (this.lastHash !== hash) {
                 location.replace(hash);
                 this.lastHash = hash;
             }
@@ -157,6 +162,7 @@
         movingMap: false,
         update: function() {
             var hash = location.hash;
+            if(location.hash.length===0) hash = location.search;
             if (hash === this.lastHash) {
                 // console.info("(no change)");
                 return;
