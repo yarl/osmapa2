@@ -163,10 +163,9 @@ search.parse = function(output) {
             point.polygon = $(this).attr("polygonpoints");
             
             //nominatim fixes
-            if(point.name === '') point.name = point.value;
-            if(point.name === 'house') point.name = 'numer '+point.number;
-            
-            if(point.road === '') point.road = point.pedestrian;
+            //if(point.name === '') point.name = point.value;
+            //if(point.name === 'house') point.name = 'numer '+point.number;
+            //if(point.road === '') point.road = point.pedestrian;
             
 //            if(point.name === undefined)
 //                point.name = $(this).find($(this).attr("place")).each(function(){
@@ -188,6 +187,10 @@ search.parse = function(output) {
         }
         if(point.tag === "railway") {
             point.type = search.type.POI;
+            search.results[$(this).attr("osm_id")] = point;
+        }
+        if(point.tag === "highway") {
+            point.type = search.type.ADDR;
             search.results[$(this).attr("osm_id")] = point;
         } 
 //        if($(this).attr("class")=="highway")
