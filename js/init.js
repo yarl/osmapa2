@@ -26,7 +26,8 @@ $(document).ready(function() {
     
     // layers
     map.layer = undefined;
-    $("#box-layers button[name=osmapa]").click();
+    if(localStorage.getItem("map") !== null) $("button#layer-"+localStorage.getItem("map")).click();
+    else $("#box-layers button[name=osmapa]").click();
     map.hash = new L.Hash(map);
     
     //save position
@@ -99,6 +100,7 @@ layers.change = function(id) {
     //layer
     if(id.indexOf("layer") !== -1) {
         map.layer = id.substring(6, 8);
+        localStorage.setItem("map", map.layer);
         layers.container.clearLayers();
         layers.container.addLayer(eval("layers."+name));
         if(name === "bing")

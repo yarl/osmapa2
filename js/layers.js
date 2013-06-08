@@ -19,7 +19,7 @@ layers.osm = new L.tileLayer(
     { attribution: layers.attrib, maxZoom: 18 }
 ); 
 layers.hikebike = new L.tileLayer(
-    'http://{s}.osm.trail.pl/hikebike/{z}/{x}/{y}.png',
+    'http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png',
     { attribution: layers.attrib, maxZoom: 18 }
 ); 
 layers.mapsurfer = new L.tileLayer(

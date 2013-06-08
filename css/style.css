@@ -280,7 +280,7 @@
     background-size: 350%;
 }
 #box-layers button[name=hikebike] {
-    background: rgba(0,0,0,.8) url(http://a.osm.trail.pl/hikebike/15/18294/10787.png) no-repeat -48px -85px;
+    background: rgba(0,0,0,.8) url(http://toolserver.org/tiles/hikebike/15/18294/10787.png) no-repeat -48px -85px;
     background-size: 350%;
 }
 #box-layers button[name=mapsurfer] {
