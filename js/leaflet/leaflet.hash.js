@@ -56,17 +56,10 @@
                 }
                 if(startPin && mlat !== undefined && mlon !== undefined)
                     L.marker([mlat,mlon]).addTo(map);
-                if(isNaN(lat)) {
-                    lat = mlat;
-                    console.log('bum');
-                }
+                
+                if(isNaN(lat)) lat = mlat;
                 if(isNaN(lon)) lon = mlon;
-                console.log(lat);
-                /*
-                var zoom = parseInt(args[0], 10),
-                    lat = parseFloat(args[1].substring(4,args[1].length)),
-                    lon = parseFloat(args[2]);
-                */
+
                 if (isNaN(zoom) || isNaN(lat) || isNaN(lon)) {
                     return false;
                 } else {
