@@ -24,24 +24,44 @@
             
             var args = hash.split("&");
             if (args.length >= 3) {
+                var startPin = false;
+                var lat = null;
+                var lon = null;
+                var zoom = null;
+                var mlat, mlon;
+                
                 for(var i in args) {
-                    if(args[i].search("lat=") !== -1)   var lat = parseFloat(args[i].substring(4,args[i].length));
-                    if(args[i].search("lon=") !== -1)   var lon = parseFloat(args[i].substring(4,args[i].length));
-                    if(args[i].search("z=") !== -1)     var zoom = parseInt(args[i].substring(2,args[i].length));
-                    if(args[i].search("zoom=") !== -1)  var zoom = parseInt(args[i].substring(5,args[i].length));
+                    if(args[i].search("lat=") !== -1)   lat = parseFloat(args[i].substring(4,args[i].length));
+                    if(args[i].search("lon=") !== -1)   lon = parseFloat(args[i].substring(4,args[i].length));
+                    if(args[i].search("z=") !== -1)     zoom = parseInt(args[i].substring(2,args[i].length));
+                    if(args[i].search("zoom=") !== -1)  zoom = parseInt(args[i].substring(5,args[i].length));
                     
                     if(args[i].search("m=") !== -1 && args[i].search("zoom=") === -1) {
                         var id = args[i].substring(2,args[i].length);
                         layers.change("layer-"+id); 
                     }
-                    
                     if(args[i].search("b=") !== -1) {
                         map.bugid = args[i].substring(2,args[i].length);
                         if(!bbugs)
                             $("#box-bugs h3").click();
                     }
+                    if(args[i].search("mlat=") !== -1) {
+                        mlat = parseFloat(args[i].substring(5,args[i].length));
+                        startPin = true;
+                    }
+                    if(args[i].search("mlon=") !== -1) {
+                        mlon = parseFloat(args[i].substring(5,args[i].length));
+                        startPin = true;
+                    }
                 }
-                
+                if(startPin && mlat !== undefined && mlon !== undefined)
+                    L.marker([mlat,mlon]).addTo(map);
+                if(isNaN(lat)) {
+                    lat = mlat;
+                    console.log('bum');
+                }
+                if(isNaN(lon)) lon = mlon;
+                console.log(lat);
                 /*
                 var zoom = parseInt(args[0], 10),
                     lat = parseFloat(args[1].substring(4,args[1].length)),
@@ -60,15 +80,19 @@
             }
         },
         _change: function(source, param, text) {
-            var r = new RegExp(param+"=[a-z0-9\.\-]*");
+            var r = new RegExp("[&#]"+param+"=[a-z0-9\.\-]*");
             
             var hash;
             if(text === null) {
                 hash = source.replace('&'+param,param).replace(r,'');
-            } else
-                hash = (source.search(param+"=") !== -1) ? 
-                    source.replace(r, param+"=" + text) : 
-                    source.concat("&"+param+"=" + text);
+            } else {
+                if(source.search('&'+param+"=") !== -1) hash = source.replace(r, '&'+param+"=" + text);
+                else if(source.search('#'+param+"=") !== -1) hash = source.replace(r, '#'+param+"=" + text);
+                else hash = source.concat("&"+param+"=" + text);
+            }
+//                hash = (source.search('&'+param+"=") !== -1 || source.search('#'+param+"=") !== -1) ? 
+//                    source.replace(r, param+"=" + text) : 
+//                    source.concat("&"+param+"=" + text);
             //console.log(param + ": "+hash);
             return hash;
         },
@@ -87,6 +111,8 @@
                 ret = this._change(ret, "zoom", null);
                 ret = this._change(ret, "map", null);
                 ret = this._change(ret, "o", null);
+                //ret = this._change(ret, "mlat", null);
+                //ret = this._change(ret, "mlon", null);
                 return ret;
                 
 //                var r_lat = new RegExp("lat=[0-9\.]*");
