@@ -48,8 +48,9 @@
             if(hash.indexOf('?') === 0) hash = hash.substr(1);
             
             var args = hash.split("&");
+            var startAddr = false, startText = false;
             if(args.length >= 3) {
-                var startPin = false, startAddr = false, startText = false;
+                var startPin = false;
                 var lat = null;
                 var lon = null;
                 var zoom = null;
@@ -86,8 +87,7 @@
                 if(startPin && mlat !== undefined && mlon !== undefined)
                     L.marker([mlat,mlon]).addTo(map);
                 
-                if(startAddr !== false)
-                    this.parseSearch(startAddr, startText);
+                if(startAddr !== false) this.parseSearch(startAddr, startText);
                 
                 if(isNaN(lat)) lat = mlat;
                 if(isNaN(lon)) lon = mlon;
@@ -100,10 +100,12 @@
                         zoom: zoom
                     };
                 }
-            } else if(args.length === 1) {
-                if(args[0].search("addr=") !== -1) this.parseSearch(args[0].substring(5,args[0].length));
-                return false;
             } else {
+                for(var i in args) {
+                    if(args[i].search("text=") !== -1) startText = decodeURI(args[i].substring(5,args[i].length));
+                    if(args[i].search("addr=") !== -1) startAddr = decodeURI(args[i].substring(5,args[i].length));
+                }
+                if(startAddr !== false) this.parseSearch(startAddr, startText);
                 return false;
             }
         },
