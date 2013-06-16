@@ -17,14 +17,35 @@
         map: null,
         lastHash: null,
     
+        parseSearch: function(text) {
+            $.ajax({
+                type: "GET",
+                dataType : 'text',
+                crossDomain: true,
+                url: "http://nominatim.openstreetmap.org/search",
+                data: "q="+text+"&format=xml&addressdetails=0&polygon=0",
+                error:function(xhr, status, errorThrown) {
+                    alert("Błąd: " + errorThrown);
+                },
+                success: function(output) {
+                    var point = $(output).find('place').first();
+                    map.setView([point.attr("lat"), point.attr("lon")], 16);
+                    L.marker([point.attr("lat"), point.attr("lon")])
+                            .bindPopup('<div style="padding: 10px;">'+point.attr("display_name")+'</div>')
+                            .openPopup()
+                            .addTo(map);
+                }
+            });
+        },
+
         parseHash: function(hash) {
             //hash = hash.replace(/\?/g, "#");
             if(hash.indexOf('#') === 0) hash = hash.substr(1);  
             if(hash.indexOf('?') === 0) hash = hash.substr(1);
             
             var args = hash.split("&");
-            if (args.length >= 3) {
-                var startPin = false;
+            if(args.length >= 3) {
+                var startPin = false, startAddr = false;
                 var lat = null;
                 var lon = null;
                 var zoom = null;
@@ -53,9 +74,14 @@
                         mlon = parseFloat(args[i].substring(5,args[i].length));
                         startPin = true;
                     }
+                    if(args[i].search("addr=") !== -1)
+                        startAddr = args[i].substring(5,args[i].length);
                 }
                 if(startPin && mlat !== undefined && mlon !== undefined)
                     L.marker([mlat,mlon]).addTo(map);
+                
+                if(startAddr !== false)
+                    this.parseSearch(startAddr);
                 
                 if(isNaN(lat)) lat = mlat;
                 if(isNaN(lon)) lon = mlon;
@@ -68,6 +94,9 @@
                         zoom: zoom
                     };
                 }
+            } else if(args.length === 1) {
+                if(args[0].search("addr=") !== -1) this.parseSearch(args[0].substring(5,args[0].length));
+                return false;
             } else {
                 return false;
             }
