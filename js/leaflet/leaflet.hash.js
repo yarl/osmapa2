@@ -17,21 +17,25 @@
         map: null,
         lastHash: null,
     
-        parseSearch: function(text) {
+        parseSearch: function(addr, text) {
             $.ajax({
                 type: "GET",
                 dataType : 'text',
                 crossDomain: true,
                 url: "http://nominatim.openstreetmap.org/search",
-                data: "q="+text+"&format=xml&addressdetails=0&polygon=0",
+                data: "q="+addr+"&format=xml&addressdetails=0&polygon=0",
                 error:function(xhr, status, errorThrown) {
                     alert("Błąd: " + errorThrown);
                 },
                 success: function(output) {
                     var point = $(output).find('place').first();
-                    map.setView([point.attr("lat"), point.attr("lon")], 16);
+                    var popup = '<div style="padding: 10px;">'+point.attr("display_name")+'</div>';
+                    if(text !== false)
+                        popup = '<div style="padding: 10px;">'+text+'</div>';
+                    
+                    map.setView([point.attr("lat"), point.attr("lon")], 17);
                     L.marker([point.attr("lat"), point.attr("lon")])
-                            .bindPopup('<div style="padding: 10px;">'+point.attr("display_name")+'</div>')
+                            .bindPopup(popup)
                             .openPopup()
                             .addTo(map);
                 }
@@ -45,7 +49,7 @@
             
             var args = hash.split("&");
             if(args.length >= 3) {
-                var startPin = false, startAddr = false;
+                var startPin = false, startAddr = false, startText = false;
                 var lat = null;
                 var lon = null;
                 var zoom = null;
@@ -75,13 +79,15 @@
                         startPin = true;
                     }
                     if(args[i].search("addr=") !== -1)
-                        startAddr = args[i].substring(5,args[i].length);
+                        startAddr = decodeURI(args[i].substring(5,args[i].length));
+                    if(args[i].search("text=") !== -1)
+                        startText = decodeURI(args[i].substring(5,args[i].length));
                 }
                 if(startPin && mlat !== undefined && mlon !== undefined)
                     L.marker([mlat,mlon]).addTo(map);
                 
                 if(startAddr !== false)
-                    this.parseSearch(startAddr);
+                    this.parseSearch(startAddr, startText);
                 
                 if(isNaN(lat)) lat = mlat;
                 if(isNaN(lon)) lon = mlon;
