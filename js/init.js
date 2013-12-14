@@ -42,9 +42,9 @@ $(document).ready(function() {
     map._lastClick = new L.LatLng(0,0);
     map.on('contextmenu', function(e) {
         map._lastClick = e.latlng;
-        console.log(e.latlng);
     });
     
+    //jQuery.support.cors = true;
     map.move = function() {
         map.panTo(map._lastClick);
     };
@@ -134,6 +134,7 @@ $("#box-edit h3").click(function () {
 * Bugs
 * ******************************************************************************
 */
+/*
 var bbugs = false;  
 layers.osb = new L.OpenStreetBugs({
     dblClick: false, 
@@ -142,6 +143,7 @@ layers.osb = new L.OpenStreetBugs({
     iconActive:"http://osmapa.pl/bugs/img/active_bug_marker.png", 
     editArea:0.001
 });
+
 
 $("#box-bugs h3").click(function () {
     if(!bbugs) {
@@ -157,3 +159,4 @@ $("#box-bugs h3").click(function () {
     }
     bbugs = !bbugs;
 });
+*/

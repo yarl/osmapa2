@@ -2,20 +2,17 @@
 <html lang="pl">
   <head>
     <meta charset="utf-8">
-    <title>Osmapa.pl | OpenStreetMap Polska</title>
+    <title>Osmapa.pl | Mapa OpenStreetMap Polska</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="yarl@o2.pl">
+    <meta name="description" content="Osmapa.pl - mapa OpenStreetMap przygotowana przez Stowarzyszenie OpenStreetMap Polska.">
+    <meta name="author" content="Paweł Marynowski (yarlu.pl)">
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    
-    <!-- Bootstrap -->
-    <link href="js/bootstrap/bootstrap.css" rel="stylesheet">
-    <link href="js/bootstrap/bootstrap-responsive.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 
     <!-- Leaflet -->
     <link rel="stylesheet" href="js/leaflet/leaflet.css" />
     <!--[if lte IE 8]><link rel="stylesheet" href="js/leaflet/leaflet.ie.css" /><![endif]-->
-    <script src="js/leaflet/leaflet.js"></script>
+    <script src="http://leafletjs.com/dist/leaflet.js"></script>
     <link rel="stylesheet" href="js/leaflet/MarkerCluster.css" />
     <link rel="stylesheet" href="js/leaflet/MarkerCluster.Default.css" />
     <!--[if lte IE 8]><link rel="stylesheet" href="js/leaflet/MarkerCluster.Default.ie.css" /><![endif]-->
@@ -26,9 +23,8 @@
     <script src="js/leaflet/leaflet.geoloc.js"></script>
     <script src="js/leaflet/leaflet.bing.js"></script>
     <script src="js/leaflet/leaflet.fullscreen.js"></script>
-    <script src="js/leaflet/leaflet.osmbugs.js"></script>
     <script src="js/leaflet/leaflet.polyline-encoded.js"></script>
-    
+
     <!-- jQuery -->
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="js/jquery/jquery.xdomainrequest.js"></script>
@@ -39,97 +35,71 @@
   </head>
 
   <body>  
-    <div class="navbar navbar-inverse navbar-static-top" id="top">
+    <div class="navbar navbar-static-top" id="top">
       <div class="navbar-inner">
-            <ul class="nav logo">
-                <li><a href="."><img src="img/logo.png" /></a>
-                    <em>mapa, którą możesz <strong>współtworzyć</strong></em>
-                </li>
-            </ul>
-<!--
-            <ul class="nav pull-right">
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Więcej <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="http://osmapa.pl/">osmapa.pl</a></li>
-                  <li><a href="http://osmapa.pl/w">osmapa.pl/w</a></li>
-                  <li class="divider"></li>
-                  <li class="nav-header">Stowarzyszenie</li>
-                  <li><a href="http://osm.org.pl">OpenStreetMap Polska</a></li>
-                </ul>
-              </li>
-            </ul>
--->
+        <div class="pull-right">
+          <span id="search" class="active">Szukaj</span><span id="nav">Nawiguj</span>
+        </div>
+        <a id="logo" href="."><img src="img/logo.png" /></a>
+        <em>mapa, którą możesz <strong><a href="http://openstreetmap.org.pl/osm/o-openstreetmap/">współtworzyć</a></strong></em>
       </div>
     </div>
 
     <div class="container">
-        <a id="map-loading" style="display: none;"><img src="img/loading.gif" alt="Wczytywanie..."/></a>
-        <div id="map"></div>
-        
-        <!-- search -->
-        <div class="box box-right" id="box-search">
-            <h3 class="shadow-right">Szukaj</h3>
-            <div class="shadow-right">
-                <input id="box-search-input" type="text" placeholder="Wpisz adres" value="Kopernika 17, Warszawa">
-                <button id="box-search-button" class="btn">Szukaj</button>
-                <img class="loading" src="img/loading.gif" alt="Wczytywanie danych..."/>
-                <div id="box-search-results-container">
-                    <div class="btn-group" id="box-search-switcher" data-toggle="buttons-radio">
-                        <button type="button" name="addr" class="btn">Miejsca</button>
-                        <button type="button" name="poi" class="btn">POI</button>
-                        <button type="button" name="clear" class="btn">Wyczyść</button>
-                    </div>
-                    
-                    <div id="box-search-results">
-                        <div name="place"></div>
-                        <div name="road"></div>
-                        <div name="addr"></div>
-                        <div name="poi"></div>
-                    </div>
-                </div>
-            </div>
+      <a id="map-loading" style="display: none;"><img src="img/loading.gif" alt="Wczytywanie..."/></a>
+      <div id="map"></div>
+
+      <div class="tool" id="tool-search">
+        <div class="tool-bar">
+          <input type="text" placeholder="Wpisz adres"><button class="btn">Szukaj</button>
         </div>
-        
-        <!-- layer swicher -->
-        <div class="box box-left" id="box-layers">
-            <h3 class="shadow-left">&nbsp;</h3>
-            <div class="shadow-left">
-                <p>Warstwa podstawowa</p>
-                <div class="btn-group" data-toggle="buttons-radio">
-                    <button id="layer-os" name="osmapa" class="btn" data-toggle="tooltip" title="first tooltip">&nbsp;</button>
-                    <button id="layer-fs" name="foursq" class="btn">&nbsp;</button>
-                    <button id="layer-ma" name="osm" class="btn">&nbsp;</button>
-                    <button id="layer-hb" name="hikebike" class="btn">&nbsp;</button>
-                    <button id="layer-ms" name="mapsurfer" class="btn">&nbsp;</button>
-                    <button id="layer-bw" name="mapsurferbw" class="btn">&nbsp;</button>
-                    <button id="layer-mq" name="mapquest" class="btn">&nbsp;</button>
-                    <!--<button id="sk" name="skobbler" class="btn">&nbsp;</button>-->
-                    <button id="layer-bi" name="bing" class="btn">&nbsp;</button>
-                </div>
-                <p>Nakładki</p>
-                <button id="overlay-sh" data-toggle="button" name="shadow" class="btn">&nbsp;</button>
-                <button id="overlay-tr" data-toggle="button" name="transport" class="btn">&nbsp;</button>
-                <button id="overlay-pa" data-toggle="button" name="paths" class="btn">&nbsp;</button>
-            </div>
+        <div class="tool-results-container">
+          <div id="search-results" class="tool-results"></div>
+          <button id="search-clear" class="btn tool-clear">Wyczyść</button>
         </div>
-        
-        <!-- edit & bugs -->
-        <div class="box box-left" id="box-edit">
-            <h3 class="shadow-left">&nbsp;</h3>
-            <div class="shadow-left">
-                <button id="potlatch" class="btn btn-small">P2</button>
-                <button id="josm" class="btn btn-small">JOSM</button>
-            </div>
+      </div>
+      <div class="tool" id="tool-nav">
+        <div class="tool-bar">
+          <input id="nav-start" class="input-round" type="text" placeholder="Wpisz adres" value="">
+          <input id="nav-end" class="input-round" type="text" placeholder="Wpisz adres" value="">
+          <button id="nav-search" class="btn">Wyznacz trasę</button>
         </div>
-        <div class="box box-left" id="box-bugs">
-            <h3 class="shadow-left">&nbsp;</h3>
-            <div class="shadow-left">
-                <button id="bugs-add" class="btn">Dodaj błąd</button>
-            </div>
+        <div class="tool-results-container">
+          <div id="nav-results" class="tool-results">Szukam...</div>
+          <button id="nav-clear" class="btn tool-clear">Wyczyść</button>
         </div>
-        
-    </div> <!-- /container -->
+      </div>
+
+      <div class="box box-left" id="box-layers">
+        <h3 class="shadow-left">&nbsp;</h3>
+        <div class="shadow-left">
+          <p>Warstwa podstawowa</p>
+          <div class="btn-group" data-toggle="buttons-radio">
+            <button id="layer-os" name="osmapa" class="btn" data-toggle="tooltip" title="first tooltip">&nbsp;</button>
+            <button id="layer-fs" name="foursq" class="btn">&nbsp;</button>
+            <button id="layer-ma" name="osm" class="btn">&nbsp;</button>
+            <button id="layer-hb" name="hikebike" class="btn">&nbsp;</button>
+            <button id="layer-ms" name="mapsurfer" class="btn">&nbsp;</button>
+            <button id="layer-bw" name="mapsurferbw" class="btn">&nbsp;</button>
+            <button id="layer-mq" name="mapquest" class="btn">&nbsp;</button>
+            <!--<button id="sk" name="skobbler" class="btn">&nbsp;</button>-->
+            <button id="layer-bi" name="bing" class="btn">&nbsp;</button>
+          </div>
+          <p>Nakładki</p>
+          <button id="overlay-sh" data-toggle="button" name="shadow" class="btn">&nbsp;</button>
+          <button id="overlay-tr" data-toggle="button" name="transport" class="btn">&nbsp;</button>
+          <button id="overlay-pa" data-toggle="button" name="paths" class="btn">&nbsp;</button>
+        </div>
+      </div>
+
+      <div class="box box-left" id="box-edit">
+        <h3 class="shadow-left">&nbsp;</h3>
+        <div class="shadow-left">
+          <button id="potlatch" class="btn btn-small">P2</button>
+          <button id="josm" class="btn btn-small">JOSM</button>
+        </div>
+      </div>
+    </div>
     <script src="js/bootstrap/bootstrap.min.js"></script>
     <script src="js/layers.js"></script>
     <script src="js/init.js"></script>

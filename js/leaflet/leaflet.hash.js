@@ -66,11 +66,11 @@
                         var id = args[i].substring(2,args[i].length);
                         layers.change("layer-"+id); 
                     }
-                    if(args[i].search("b=") !== -1) {
+                    /*if(args[i].search("b=") !== -1) {
                         map.bugid = args[i].substring(2,args[i].length);
                         if(!bbugs)
                             $("#box-bugs h3").click();
-                    }
+                    }*/
                     if(args[i].search("mlat=") !== -1) {
                         mlat = parseFloat(args[i].substring(5,args[i].length));
                         startPin = true;

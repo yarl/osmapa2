@@ -14,21 +14,26 @@ search.icon = L.icon({
  * Open/close search panel
  */
 var bsearch = true;
-$("#box-search h3").click(function () {
+$(".navbar #search").click(function () {
+    $(".navbar #search").toggleClass('active');
     if(!bsearch) {
-                $("#box-search").animate({width: "300px"}, 200);
-        $("#box-search div").delay(300).slideToggle(250);
-        if(search.results.length>0)
-            $("#box-search").css("bottom","20px");  
-        $("#box-search h3").css("border-radius","4px 0 0 0");
-    } else {
-        $("#box-search div").slideToggle(250);
-        $("#box-search").delay(300).animate({width: "100px"}, 200);
-        $("#box-search").css("bottom","auto");
-        $("#box-search h3").css("border-radius","4px 0 0 4px");
-    }
+        if(brouting) {
+            $("#tool-nav").fadeOut('quick');
+            $(".navbar #nav").toggleClass('active');
+            brouting = !brouting;
+            $("#tool-search").delay(150);
+        }
+        $("#tool-search").fadeIn('quick');
+    } else
+        $("#tool-search").fadeOut('quick');
     bsearch = !bsearch;
 });
+
+$('#search-clear').click(function(){
+    search.clear();
+});
+
+
 
 //change tabs in search box
 $("#box-search-switcher > button").click(function () {
@@ -46,7 +51,7 @@ $("#box-search-switcher > button").click(function () {
 /*
  * Result click
  */
-$("#box-search-results").on("click", "div p", function(){
+$("#search-results").on("click", "p", function(){
     var id = $(this).attr('id');
     map.setView(search.results[id].coord, 17);
     search.results[id].marker.openPopup();
@@ -55,13 +60,35 @@ $("#box-search-results").on("click", "div p", function(){
 /*
  * Start searching
  */
-$("#box-search-button").click(function () {
-    search.start();
+$("#tool-search .tool-bar button").click(function () {
+    search.start($("#tool-search .tool-bar input").val());
+    search.show();
 });
-$("#box-search-input").keypress(function(e) {
-    if(e.which === 13)
-        search.start();
+$("#tool-search .tool-bar input").keypress(function(e) {
+    if(e.which === 13) {
+        search.start($("#tool-search .tool-bar input").val());
+        search.show();
+    }
 });
+
+search.show = function() {
+    $("#tool-search").css("bottom", "10px");
+    $("#tool-search .tool-results-container").fadeIn('quick');
+};
+
+search.hide = function() {
+    $("#tool-search .tool-results-container").fadeOut('quick');
+    $('#tool-search').delay(150).queue(function(){ 
+        $(this).css("bottom", "default");  
+    });
+};
+
+search.clear = function() {
+    search.hide();
+    layers.search.clearLayers();
+};
+
+
 
 /*
  * Found point - class
@@ -107,10 +134,11 @@ search.point = function(id) {
 /*
  * Start search
  */
-search.start = function() {
-    $("#box-search .loading").delay(150).fadeIn(150);
+search.start = function(query) {
+    /*$("#box-search .loading").delay(150).fadeIn(150);
     $("#box-search-results-container").fadeOut(150);
-    $("#box-search").css("bottom","20px");
+    $("#box-search").css("bottom","20px");*/
+    $('#search-results').text("Szukam...");
     
     //clear
     layers.search.clearLayers();
@@ -118,13 +146,12 @@ search.start = function() {
     search.desc['addr'] = "";
     search.desc['poi'] = "";
     
-    jQuery.support.cors = true;
     $.ajax({
         type: "GET",
         dataType : 'text',
         crossDomain: true,
         url: "http://nominatim.openstreetmap.org/search",
-        data: "q="+$("#box-search-input").val()+"&format=xml&addressdetails=1&polygon=1",
+        data: "q="+query+"&format=xml&addressdetails=1&polygon=1",
         error:function(xhr, status, errorThrown) {
             alert("Błąd: " + errorThrown);
 	},
@@ -201,16 +228,20 @@ search.parse = function(output) {
 
     // add to map
     for(var i in search.results) {
-        switch(search.results[i].type) {
-            case search.type.ADDR:
-                search.desc['addr'] += search.results[i].getInfo(); 
-                layers.search.addLayer(search.results[i].getMarker());
-                break;
-            case search.type.POI:
-                search.desc['poi'] += search.results[i].getInfo();
-                layers.search.addLayer(search.results[i].getMarker());
-                break;
-        }
+        search.desc['addr'] += search.results[i].getInfo(); 
+        console.log(search.results[i].getInfo());
+        layers.search.addLayer(search.results[i].getMarker());
+                
+//        switch(search.results[i].type) {
+//            case search.type.ADDR:
+//                search.desc['addr'] += search.results[i].getInfo(); 
+//                layers.search.addLayer(search.results[i].getMarker());
+//                break;
+//            case search.type.POI:
+//                search.desc['poi'] += search.results[i].getInfo();
+//                layers.search.addLayer(search.results[i].getMarker());
+//                break;
+//        }
     }
     map.fitZoom(search.results);
 
@@ -222,11 +253,13 @@ search.parse = function(output) {
 
     //content
     $("#box-search-switcher button[name=addr]").click();
-    $("#box-search-results div[name=addr]").html(search.desc['addr']);
-    $("#box-search-results div[name=poi]").html(search.desc['poi']);
+    /*$("#box-search-results div[name=addr]").html(search.desc['addr']);
+    $("#box-search-results div[name=poi]").html(search.desc['poi']);*/
+    $("#tool-search .tool-results").html(search.desc['addr']);      
 };
+
+
 
 search.returnBox = function() {
     
 };
-
