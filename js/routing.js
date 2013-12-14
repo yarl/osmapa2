@@ -225,8 +225,13 @@ routing.road = function(data) {
   routing.routeBuff.clearLayers();
   
   if(data.status == 0) {
-    var route = L.polyline(routing.decode(data.route_geometry, 6));
+    var route = L.polyline(routing.decode(data.route_geometry, 6), {color:'#333'});
+    var dist = Math.round(parseFloat(data.route_summary.total_distance/1000.0) * 100) / 100,
+    time = data.route_summary.total_time,
+      h = (time/60/60) << 0, min = (time/60) % 60 << 0;
+    var time_ = h !== 0 ? h+' godz. '+min+' min' : min+' min';
 
+    route.bindPopup('<div class="popup-body"><h1>Trasa</h1><div>'+dist+' km<br />'+time_+'</div></div>');
     routing.route.addLayer(route);
     map.fitBounds(route.getBounds());
     $('#nav-results').html(routing.instructions(data.route_instructions));
