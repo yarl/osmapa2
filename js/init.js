@@ -125,9 +125,27 @@ $("#box-edit h3").click(function () {
         $("#box-edit h3").css("border-radius","0");
     } else {
         $("#box-edit div").animate({width: "0px"}, 200).hide(1);
-        $("#box-edit h3").css("border-radius","0 4px 0 0");
+        $("#box-edit h3").css("border-radius","0 4px 4px 0");
     }
     bedit = !bedit;
+});
+
+$('#ideditor').click(function() {
+  window.location.href = 'http://www.openstreetmap.org/edit?editor=id#map='+map.getZoom()+'/'+map.getCenter().lat+'/'+map.getCenter().lng;
+});
+
+$('#potlatch').click(function() {
+  window.location.href = 'http://www.openstreetmap.org/edit?editor=potlatch2#map='+map.getZoom()+'/'+map.getCenter().lat+'/'+map.getCenter().lng;
+});
+
+$('#josm').click(function() {
+  var href = "http://localhost:8111/load_and_zoom" +
+      "?left=" + map.getBounds().getSouthWest().lng +
+      "&right=" + map.getBounds().getNorthEast().lng +
+      "&top=" + map.getBounds().getNorthEast().lat +
+      "&bottom=" + map.getBounds().getSouthWest().lat;
+  $('#josm-iframe').attr("src", href);
+  $('#josm-iframe').attr("src", '#');
 });
 
 /*

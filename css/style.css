@@ -472,7 +472,7 @@ body {
   bottom: 85px;
 }
 #box-edit h3 {
-  border-radius: 0 4px 0 0;
+  border-radius: 0 4px 4px 0;
   background: rgba(0,0,0,.8) url(../js/leaflet/images/edit.png) no-repeat 9px 9px;
 }
 #box-edit div, #box-bugs div {
@@ -707,9 +707,10 @@ hr {
 
 .leaflet-left .leaflet-control {
   margin-left: 0;
-  -webkit-box-shadow: 2px 2px 5px 0px #aaa;
-  -moz-box-shadow: 2px 2px 5px 0px #aaa;
-  box-shadow: 2px 2px 5px 0px #aaa;
+}
+
+.leaflet-control-scale {
+  margin: 10px !important;
 }
 
 .leaflet-top .leaflet-control {
