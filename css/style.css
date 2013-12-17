@@ -83,6 +83,18 @@ body {
   margin-right: 10px;
 }
 
+.garmin {
+  width: 250px !important;
+}
+
+.garmin a {
+  color: white !important;
+}
+
+.garmin img {
+  margin-top: -2px;
+}
+
 /*
  *
  * Tools
