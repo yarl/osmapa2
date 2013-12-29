@@ -143,7 +143,7 @@
         function showMenu(e, menutarget) {
             target = menutarget;
             showMenuGroup.call(groups.cmroot, { left: e.pageX, top: e.pageY }, 0);
-            $(document).one('mousedown', hideMenuPane);
+            $(target).one('mousedown', hideMenuPane);
         }
         var $root = $("#" + option.alias);
         var root = null;
